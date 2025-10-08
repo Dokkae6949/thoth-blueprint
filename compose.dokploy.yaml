@@ -1,0 +1,22 @@
+services:
+  thothblueprint:
+    build: .
+    ports:
+      - 80
+    networks:
+      - dokploy-network
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.thoth-blueprint-01.rule=Host(`5.180.253.47`) && PathPrefix(`/thoth-blueprint`)
+      - traefik.http.routers.thoth-blueprint-01.entrypoints=web
+      - traefik.http.routers.thoth-blueprint-01.middlewares=strip-prefix
+      - traefik.http.services.thoth-blueprint-01.loadbalancer.server.port=80
+      - traefik.http.middlewares.strip-prefix.stripprefix.prefixes=/thoth-blueprint
+
+networks:
+  dokploy-network:
+    external: true
